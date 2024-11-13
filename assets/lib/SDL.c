@@ -9,34 +9,36 @@ void start_SDL() {
     }
 }
 
-void init_SDL(App app) {
+void init_SDL(App *app) {
     start_SDL();
 
-    app.window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED,
-                                  SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-                                  SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    app->window = SDL_CreateWindow("ICOutside", SDL_WINDOWPOS_UNDEFINED,
+                                   SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+                                   SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
-    if (app.window == NULL) {
+    if (app->window == NULL) {
         printf("SDL_CreateWindow Error: %s\n", SDL_GetError());
         SDL_Quit();
         exit(ERROR);
     }
 
-    app.surface = SDL_GetWindowSurface(app.window);
+    app->surface = SDL_GetWindowSurface(app->window);
 }
 
-void load_image(App app, char *path) {
-    SDL_Surface *image = SDL_LoadBMP(path);
+void load_images(App *app) {
+    for (int i = 0; i < All; i++) {
+        SDL_Surface *image = SDL_LoadBMP(PATHS);
 
-    if (image == NULL) {
-        printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
-        SDL_DestroyWindow(app.window);
-        SDL_Quit();
-        exit(ERROR);
+        if (image == NULL) {
+            printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
+            SDL_DestroyWindow(app->window);
+            SDL_Quit();
+            exit(ERROR);
+        }
+
+        SDL_BlitSurface(image, NULL, app->images + i, NULL);
+        SDL_FreeSurface(image);
     }
-
-    SDL_BlitSurface(image, NULL, app.surface, NULL);
-    SDL_FreeSurface(image);
 }
 
 void load_sound(char *path) {
@@ -67,31 +69,35 @@ void load_sound(char *path) {
     SDL_PauseAudioDevice(deviceId, 0);
 }
 
-void load(App app, char paths[][100], int n) {
-    for (int i = 0; i < n; i++) {
-        char *path = paths[i];
-        if (strstr(path, ".bmp") != NULL) {
-            load_image(app, path);
-        } else if (strstr(path, ".wav") != NULL) {
-            load_sound(path);
-        }
-    }
-}
-
-void close_SDL(App app) {
-    SDL_DestroyWindow(app.window);
+void close_SDL(App *app) {
+    SDL_DestroyWindow(app->window);
+    app->window = NULL;
     SDL_Quit();
 }
 
-void render(App app) {
-    SDL_UpdateWindowSurface(app.window);
+void render(App *app) {
+    SDL_UpdateWindowSurface(app->window);
 }
 
-void white_screen(App app) {
-    SDL_FillRect(app.surface, NULL,
-                 SDL_MapRGB(app.surface->format, 255, 255, 255));
+void white_screen(App *app) {
+    SDL_FillRect(app->surface, NULL,
+                 SDL_MapRGB(app->surface->format, 255, 255, 255));
 }
 
 void delay(int ms) {
     SDL_Delay(ms);
+}
+
+void load_images(Player *player) {
+    char *path = "assets/images/characters/Hipster/kungfou.bmp";
+    SDL_Surface *image = SDL_LoadBMP(path);
+
+    if (image == NULL) {
+        printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
+        SDL_Quit();
+        exit(ERROR);
+    }
+
+    SDL_BlitSurface(image, NULL, player->image, NULL);
+    SDL_FreeSurface(image);
 }
