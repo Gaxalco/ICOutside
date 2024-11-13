@@ -1,0 +1,1 @@
+gcc main.c -o exe -Wall -Wextra -Werror -pedantic -std=c99 -lSDL2; ./exe
