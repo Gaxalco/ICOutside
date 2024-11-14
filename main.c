@@ -5,6 +5,7 @@ Player player;
 
 int main() {
     init_SDL(&app);
+    player = init_player(&app);
 
     white_screen(&app);
     load_images(&app, &player);

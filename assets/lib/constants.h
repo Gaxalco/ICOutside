@@ -26,8 +26,7 @@ typedef struct {
 } App;
 
 typedef struct {
-    int x, y;
-    int w, h;
+    SDL_Rect rect;
     int dx, dy;
     SDL_Surface *image;
 } Player;

@@ -30,6 +30,17 @@ void init_SDL(App *app) {
     app->surface = SDL_GetWindowSurface(app->window);
 }
 
+Player init_player(App *app) {
+    Player player;
+    player.image = SDL_GetWindowSurface(app->window);
+    player.rect.x = 0;
+    player.rect.y = 0;
+    player.rect.w = 100;
+    player.rect.h = 100;
+
+    return player;
+}
+
 void load_player(Player *player, SDL_Surface *image) {
     if (image == NULL) {
         printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
