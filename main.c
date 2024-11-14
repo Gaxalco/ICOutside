@@ -7,8 +7,7 @@ int main() {
     init_SDL(&app);
 
     white_screen(&app);
-    load_player(&app, "assets/images/characters/Hipster/kungfou.bmp");
-    render(&app);
+    load_images(&app, &player);
 
     SDL_Event e;
     bool quit = false;
@@ -17,6 +16,7 @@ int main() {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) quit = true;
         }
+        load_images(&app, &player);
         render(&app);
     }
 

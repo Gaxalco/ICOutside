@@ -9,17 +9,17 @@
 #define SCREEN_HEIGHT 720
 
 #define FPS 60
-#define PATHS "assets/images/characters/Hipster/kungfou.bmp"
 
 typedef enum {
     PlayerImage,
-    Zombie,
-    Monster,
     All
 } Images;
 
+char *PATHS[All] = {"assets/images/characters/Hipster/kungfou.bmp"};
+
 typedef struct {
     SDL_Window *window;
+    SDL_Renderer *renderer;
     SDL_Surface *surface;
 
     SDL_Surface *images[All];

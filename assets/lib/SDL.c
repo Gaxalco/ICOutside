@@ -2,6 +2,9 @@
 
 /* Basic SDL functions */
 
+SDL_Rect srcClip = {0, 0, 0, 0};
+SDL_Rect destClip = {0, 0, 100, 100};
+
 void start_SDL() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         printf("SDL_Init Error: %s\n", SDL_GetError());
@@ -22,22 +25,40 @@ void init_SDL(App *app) {
         exit(ERROR);
     }
 
+    app->renderer = SDL_CreateRenderer(app->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
     app->surface = SDL_GetWindowSurface(app->window);
 }
 
-void load_images(App *app) {
+void load_player(Player *player, SDL_Surface *image) {
+    if (image == NULL) {
+        printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
+        SDL_Quit();
+        exit(ERROR);
+    }
+
+    SDL_BlitSurface(image, &srcClip, player->image, &destClip);
+    SDL_FreeSurface(image);
+}
+
+void load_images(App *app, Player *player) {
     for (int i = 0; i < All; i++) {
-        SDL_Surface *image = SDL_LoadBMP(PATHS);
+        SDL_Surface *image = SDL_LoadBMP(PATHS[i]);
 
-        if (image == NULL) {
-            printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
-            SDL_DestroyWindow(app->window);
-            SDL_Quit();
-            exit(ERROR);
+        if (i == PlayerImage) {
+            load_player(player, image);
+            SDL_BlitSurface(player->image, &srcClip, app->surface, &destClip);
+        } else {
+            if (image == NULL) {
+                printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
+                SDL_DestroyWindow(app->window);
+                SDL_Quit();
+                exit(ERROR);
+            }
+
+            SDL_BlitSurface(image, NULL, app->images[i], NULL);
+            SDL_FreeSurface(image);
         }
-
-        SDL_BlitSurface(image, NULL, app->images + i, NULL);
-        SDL_FreeSurface(image);
     }
 }
 
@@ -86,18 +107,4 @@ void white_screen(App *app) {
 
 void delay(int ms) {
     SDL_Delay(ms);
-}
-
-void load_images(Player *player) {
-    char *path = "assets/images/characters/Hipster/kungfou.bmp";
-    SDL_Surface *image = SDL_LoadBMP(path);
-
-    if (image == NULL) {
-        printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        exit(ERROR);
-    }
-
-    SDL_BlitSurface(image, NULL, player->image, NULL);
-    SDL_FreeSurface(image);
 }
